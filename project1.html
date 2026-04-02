@@ -1,0 +1,2504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>GymOS — Gym Management System</title>
+    <meta
+      name="description"
+      content="GymOS helps gym owners automate membership, attendance, scheduling, billing, and insights with a modern dashboard."
+    />
+    <style>
+      :root {
+        --bg0: #070a12;
+        --bg1: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel2: rgba(255, 255, 255, 0.09);
+        --stroke: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.70);
+        --muted2: rgba(255, 255, 255, 0.55);
+        --blue: #4aa3ff;
+        --cyan: #18e0ff;
+        --green: #39ff88;
+        --lime: #b8ff3b;
+        --pink: #ff4ad5;
+        --shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
+        --shadow2: 0 10px 40px rgba(0, 0, 0, 0.45);
+        --radius: 18px;
+        --radius2: 26px;
+        --max: 1160px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Inter,
+          Arial,
+          "Noto Sans",
+          "Liberation Sans",
+          sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 600px at 20% 10%, rgba(24, 224, 255, 0.16), transparent 60%),
+          radial-gradient(1000px 700px at 90% 20%, rgba(57, 255, 136, 0.14), transparent 55%),
+          radial-gradient(900px 600px at 60% 100%, rgba(255, 74, 213, 0.12), transparent 55%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font: inherit;
+      }
+      .wrap {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+      .grid {
+        display: grid;
+        gap: 18px;
+      }
+      .glass {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow2);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .neu {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.10),
+          0 12px 40px rgba(0, 0, 0, 0.45);
+        border-radius: var(--radius);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .pill .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #fff, var(--green));
+        box-shadow: 0 0 20px rgba(57, 255, 136, 0.55);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .muted2 {
+        color: var(--muted2);
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        padding: 14px 0;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        background: rgba(7, 10, 18, 0.55);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .topbar .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+      .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background:
+          radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 40%),
+          conic-gradient(from 220deg, var(--cyan), var(--green), var(--blue), var(--pink), var(--cyan));
+        box-shadow:
+          0 10px 40px rgba(24, 224, 255, 0.18),
+          0 10px 40px rgba(57, 255, 136, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.20);
+      }
+      nav {
+        display: none;
+        gap: 18px;
+        align-items: center;
+      }
+      nav a {
+        color: rgba(255, 255, 255, 0.78);
+        font-weight: 650;
+        font-size: 14px;
+        padding: 10px 10px;
+        border-radius: 12px;
+        transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+      }
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.95);
+        transform: translateY(-1px);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn {
+        border: 0;
+        cursor: pointer;
+        border-radius: 14px;
+        padding: 11px 14px;
+        font-weight: 750;
+        letter-spacing: 0.2px;
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          background 160ms ease,
+          border-color 160ms ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.09);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, rgba(24, 224, 255, 0.18), rgba(57, 255, 136, 0.16));
+        border-color: rgba(57, 255, 136, 0.35);
+        box-shadow:
+          0 18px 55px rgba(0, 0, 0, 0.35),
+          0 0 0 0 rgba(57, 255, 136, 0);
+        position: relative;
+        overflow: hidden;
+      }
+      .btn.primary::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: radial-gradient(600px 140px at 30% 20%, rgba(255, 255, 255, 0.30), transparent 60%);
+        opacity: 0;
+        transition: opacity 180ms ease;
+      }
+      .btn.primary:hover::before {
+        opacity: 1;
+      }
+      .btn.primary:hover {
+        border-color: rgba(24, 224, 255, 0.40);
+        box-shadow:
+          0 18px 55px rgba(0, 0, 0, 0.40),
+          0 0 0 6px rgba(24, 224, 255, 0.10);
+      }
+      .btn .ic {
+        display: inline-flex;
+        vertical-align: -3px;
+        margin-right: 8px;
+      }
+      .menuBtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+      }
+      .hero {
+        position: relative;
+        padding: 44px 0 26px;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: -120px -30px auto -30px;
+        height: 440px;
+        background:
+          radial-gradient(800px 260px at 20% 30%, rgba(24, 224, 255, 0.25), transparent 70%),
+          radial-gradient(900px 300px at 70% 20%, rgba(57, 255, 136, 0.20), transparent 70%),
+          radial-gradient(700px 260px at 75% 80%, rgba(255, 74, 213, 0.15), transparent 70%);
+        filter: blur(10px);
+        pointer-events: none;
+      }
+      .heroGrid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      .headline {
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1.05;
+        margin: 14px 0 12px;
+        letter-spacing: -0.8px;
+        font-weight: 900;
+      }
+      .headline span {
+        background: linear-gradient(90deg, rgba(24, 224, 255, 1), rgba(57, 255, 136, 1));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.76);
+        max-width: 62ch;
+        margin: 0 0 18px;
+      }
+      .ctaRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin: 18px 0 10px;
+      }
+      .trustRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 14px;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.70);
+        font-size: 13px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.12);
+      }
+      .chip strong {
+        color: rgba(255, 255, 255, 0.90);
+      }
+      .heroCard {
+        padding: 18px;
+        border-radius: var(--radius2);
+        position: relative;
+        overflow: hidden;
+        min-height: 330px;
+      }
+      .heroCard::after {
+        content: "";
+        position: absolute;
+        inset: -80px;
+        background:
+          radial-gradient(380px 240px at 35% 30%, rgba(24, 224, 255, 0.20), transparent 70%),
+          radial-gradient(380px 240px at 70% 65%, rgba(57, 255, 136, 0.18), transparent 70%),
+          radial-gradient(320px 220px at 20% 80%, rgba(255, 74, 213, 0.12), transparent 70%);
+        filter: blur(10px);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      .heroCardInner {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: grid;
+        gap: 14px;
+      }
+      .heroGymBg {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.55)),
+          radial-gradient(900px 450px at 30% 20%, rgba(24, 224, 255, 0.18), transparent 55%),
+          radial-gradient(900px 450px at 70% 70%, rgba(57, 255, 136, 0.12), transparent 55%),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        padding: 14px;
+        overflow: hidden;
+      }
+      .kpiRow {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .kpi {
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .kpi .label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.70);
+      }
+      .kpi .val {
+        font-size: 18px;
+        font-weight: 900;
+        margin-top: 6px;
+        letter-spacing: -0.2px;
+      }
+      .kpi.blue .val {
+        color: rgba(24, 224, 255, 0.95);
+        text-shadow: 0 0 22px rgba(24, 224, 255, 0.22);
+      }
+      .kpi.green .val {
+        color: rgba(57, 255, 136, 0.95);
+        text-shadow: 0 0 22px rgba(57, 255, 136, 0.22);
+      }
+      .kpi.pink .val {
+        color: rgba(255, 74, 213, 0.92);
+        text-shadow: 0 0 22px rgba(255, 74, 213, 0.22);
+      }
+      .miniChart {
+        margin-top: 12px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.16);
+        overflow: hidden;
+      }
+      .miniChart header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 12px 8px;
+        color: rgba(255, 255, 255, 0.80);
+        font-weight: 750;
+        font-size: 13px;
+      }
+      .spark {
+        height: 90px;
+        position: relative;
+        padding: 0 12px 12px;
+      }
+      .spark svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .spark path {
+        stroke: rgba(24, 224, 255, 0.95);
+        stroke-width: 2.2;
+        fill: none;
+        filter: drop-shadow(0 0 10px rgba(24, 224, 255, 0.25));
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 250;
+        stroke-dashoffset: 250;
+        animation: draw 1.6s ease forwards;
+      }
+      .spark .fill {
+        fill: rgba(24, 224, 255, 0.10);
+        filter: none;
+        stroke: none;
+        opacity: 0;
+        animation: fadeIn 900ms ease 800ms forwards;
+      }
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+      .heartbeat {
+        height: 28px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .heartbeat::before {
+        content: "";
+        position: absolute;
+        inset: -40px;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            rgba(57, 255, 136, 0.10),
+            transparent,
+            rgba(24, 224, 255, 0.12),
+            transparent
+          );
+        animation: sweep 2.2s linear infinite;
+      }
+      .heartbeat::after {
+        content: "";
+        position: absolute;
+        left: -40%;
+        top: 50%;
+        width: 40%;
+        height: 2px;
+        transform: translateY(-50%);
+        background: linear-gradient(90deg, transparent, rgba(57, 255, 136, 0.9), transparent);
+        filter: drop-shadow(0 0 12px rgba(57, 255, 136, 0.40));
+        animation: pulseLine 1.9s ease-in-out infinite;
+      }
+      @keyframes sweep {
+        from {
+          transform: translateX(-8%);
+        }
+        to {
+          transform: translateX(8%);
+        }
+      }
+      @keyframes pulseLine {
+        0% {
+          left: -40%;
+          opacity: 0.0;
+        }
+        20% {
+          opacity: 1;
+        }
+        55% {
+          left: 110%;
+          opacity: 0.7;
+        }
+        100% {
+          left: 110%;
+          opacity: 0.0;
+        }
+      }
+      .section {
+        padding: 48px 0;
+      }
+      .secHead {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .secHead h2 {
+        margin: 0;
+        font-size: clamp(22px, 3vw, 34px);
+        letter-spacing: -0.4px;
+      }
+      .secHead p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.70);
+        line-height: 1.6;
+        max-width: 72ch;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .card {
+        padding: 16px;
+        border-radius: var(--radius);
+        position: relative;
+        overflow: hidden;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.18);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.05));
+      }
+      .card h3 {
+        margin: 10px 0 6px;
+        font-size: 16px;
+        letter-spacing: -0.2px;
+      }
+      .card p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.68);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+      .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.18);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .icon svg {
+        width: 22px;
+        height: 22px;
+      }
+      .gradStroke {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background: radial-gradient(600px 180px at var(--x, 30%) var(--y, 20%), rgba(24, 224, 255, 0.18), transparent 55%);
+        opacity: 0;
+        transition: opacity 180ms ease;
+      }
+      .card:hover .gradStroke {
+        opacity: 1;
+      }
+      .dashWrap {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+      .dash {
+        border-radius: var(--radius2);
+        padding: 14px;
+        overflow: hidden;
+      }
+      .dashTop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .dashTitle {
+        font-weight: 900;
+        letter-spacing: -0.2px;
+      }
+      .dashPills {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tinyPill {
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.76);
+      }
+      .dashGrid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .chartCard {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.14);
+      }
+      .chartCard header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .chartCard header .k {
+        font-weight: 900;
+        letter-spacing: -0.2px;
+      }
+      .chartCard header .t {
+        color: rgba(255, 255, 255, 0.70);
+        font-size: 12px;
+      }
+      .bars {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 8px;
+        height: 120px;
+        align-items: end;
+      }
+      .bar {
+        border-radius: 10px;
+        background: linear-gradient(180deg, rgba(24, 224, 255, 0.65), rgba(57, 255, 136, 0.35));
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.30);
+        transform-origin: bottom;
+        animation: pop 820ms ease both;
+      }
+      @keyframes pop {
+        from {
+          transform: scaleY(0.35);
+          opacity: 0.35;
+        }
+        to {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+      }
+      .lines {
+        height: 120px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background:
+          radial-gradient(500px 220px at 30% 20%, rgba(24, 224, 255, 0.16), transparent 60%),
+          radial-gradient(500px 220px at 70% 70%, rgba(57, 255, 136, 0.12), transparent 60%),
+          rgba(255, 255, 255, 0.03);
+        position: relative;
+        overflow: hidden;
+      }
+      .lines svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .lines path {
+        fill: none;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0 10px rgba(57, 255, 136, 0.22));
+      }
+      .lines .a {
+        stroke: rgba(57, 255, 136, 0.95);
+      }
+      .lines .b {
+        stroke: rgba(24, 224, 255, 0.80);
+        filter: drop-shadow(0 0 10px rgba(24, 224, 255, 0.18));
+      }
+      .benefits {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+      .infograph {
+        padding: 18px;
+        border-radius: var(--radius2);
+        overflow: hidden;
+      }
+      .rings {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .ring {
+        border-radius: 18px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.14);
+        position: relative;
+        overflow: hidden;
+      }
+      .ring::before {
+        content: "";
+        position: absolute;
+        inset: -50px;
+        background: radial-gradient(260px 160px at 35% 30%, rgba(24, 224, 255, 0.16), transparent 65%);
+        opacity: 0.9;
+      }
+      .ring .n {
+        position: relative;
+        font-size: 26px;
+        font-weight: 950;
+        letter-spacing: -0.4px;
+      }
+      .ring .s {
+        position: relative;
+        margin-top: 6px;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .progress {
+        margin-top: 14px;
+        display: grid;
+        gap: 10px;
+      }
+      .pRow {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.78);
+      }
+      .pBar {
+        grid-column: 1 / -1;
+        height: 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+      }
+      .pBar > i {
+        display: block;
+        height: 100%;
+        width: var(--w, 65%);
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(24, 224, 255, 0.85), rgba(57, 255, 136, 0.85));
+        box-shadow: 0 0 18px rgba(24, 224, 255, 0.18);
+        transform: translateX(-6%);
+        animation: load 1.2s ease forwards;
+      }
+      @keyframes load {
+        to {
+          transform: translateX(0);
+        }
+      }
+      .quotes {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .quote {
+        padding: 16px;
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .quote p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.78);
+        line-height: 1.7;
+        font-size: 14px;
+      }
+      .who {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background:
+          radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 40%),
+          linear-gradient(135deg, rgba(24, 224, 255, 0.28), rgba(57, 255, 136, 0.20));
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.40);
+      }
+      .who strong {
+        display: block;
+        font-weight: 900;
+        letter-spacing: -0.2px;
+      }
+      .who span {
+        display: block;
+        color: rgba(255, 255, 255, 0.64);
+        font-size: 12px;
+        margin-top: 2px;
+      }
+      .pricing {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .price {
+        padding: 18px;
+        border-radius: var(--radius2);
+        position: relative;
+        overflow: hidden;
+      }
+      .price .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 12px;
+        font-weight: 750;
+      }
+      .price h3 {
+        margin: 12px 0 8px;
+        font-size: 18px;
+        letter-spacing: -0.2px;
+      }
+      .price .money {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin: 10px 0 12px;
+      }
+      .price .money strong {
+        font-size: 34px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+      }
+      .price ul {
+        margin: 14px 0 16px;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+      }
+      .price li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .check {
+        width: 18px;
+        height: 18px;
+        border-radius: 6px;
+        margin-top: 1px;
+        border: 1px solid rgba(57, 255, 136, 0.35);
+        background: rgba(57, 255, 136, 0.12);
+        box-shadow: 0 0 18px rgba(57, 255, 136, 0.12);
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+      }
+      .check svg {
+        width: 12px;
+        height: 12px;
+        fill: rgba(57, 255, 136, 0.95);
+      }
+      .popular {
+        border: 1px solid rgba(24, 224, 255, 0.25);
+        box-shadow:
+          0 25px 70px rgba(0, 0, 0, 0.50),
+          0 0 0 7px rgba(24, 224, 255, 0.07);
+      }
+      .popular::before {
+        content: "";
+        position: absolute;
+        inset: -80px;
+        background: radial-gradient(620px 240px at 35% 30%, rgba(24, 224, 255, 0.18), transparent 60%);
+        pointer-events: none;
+      }
+      .badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.2px;
+        color: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(24, 224, 255, 0.35);
+        background: linear-gradient(135deg, rgba(24, 224, 255, 0.16), rgba(57, 255, 136, 0.10));
+      }
+      .ctaBanner {
+        padding: 22px;
+        border-radius: var(--radius2);
+        position: relative;
+        overflow: hidden;
+      }
+      .ctaBanner::before {
+        content: "";
+        position: absolute;
+        inset: -120px;
+        background:
+          radial-gradient(700px 260px at 25% 30%, rgba(24, 224, 255, 0.18), transparent 65%),
+          radial-gradient(700px 260px at 80% 70%, rgba(57, 255, 136, 0.16), transparent 65%);
+        filter: blur(10px);
+        pointer-events: none;
+      }
+      .ctaBanner .row {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        align-items: center;
+      }
+      .ctaBanner h3 {
+        margin: 0;
+        font-size: clamp(20px, 3vw, 30px);
+        letter-spacing: -0.4px;
+      }
+      footer {
+        padding: 34px 0 46px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.12);
+      }
+      .foot {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      .footLinks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .footLinks a {
+        color: rgba(255, 255, 255, 0.72);
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .footLinks a:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .social {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .soc {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        display: grid;
+        place-items: center;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+      }
+      .soc:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+      .soc svg {
+        width: 18px;
+        height: 18px;
+        fill: rgba(255, 255, 255, 0.78);
+      }
+      /* Mobile menu */
+      .mobileNav {
+        display: none;
+        padding: 12px;
+        border-radius: var(--radius);
+        margin-top: 12px;
+      }
+      .mobileNav a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 12px;
+        border-radius: 14px;
+        color: rgba(255, 255, 255, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .mobileNav a + a {
+        margin-top: 10px;
+      }
+      /* AI assistant widget */
+      .chatFab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 60;
+        width: 54px;
+        height: 54px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: linear-gradient(135deg, rgba(24, 224, 255, 0.16), rgba(57, 255, 136, 0.10));
+        box-shadow:
+          0 18px 55px rgba(0, 0, 0, 0.50),
+          0 0 0 0 rgba(24, 224, 255, 0);
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+      }
+      .chatFab:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 18px 55px rgba(0, 0, 0, 0.55),
+          0 0 0 7px rgba(24, 224, 255, 0.10);
+      }
+      .chatFab svg {
+        width: 22px;
+        height: 22px;
+        fill: rgba(255, 255, 255, 0.92);
+      }
+      .chatPanel {
+        position: fixed;
+        right: 16px;
+        bottom: 86px;
+        width: min(370px, calc(100vw - 32px));
+        height: 480px;
+        z-index: 60;
+        border-radius: 22px;
+        display: none;
+        overflow: hidden;
+      }
+      .chatPanel[aria-hidden="false"] {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        animation: rise 180ms ease;
+      }
+      @keyframes rise {
+        from {
+          transform: translateY(10px);
+          opacity: 0.6;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .chatHead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 14px 14px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.18);
+      }
+      .chatHead strong {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 950;
+        letter-spacing: -0.2px;
+      }
+      .chatHead .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.72);
+        font-weight: 650;
+      }
+      .chatHead .status i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(57, 255, 136, 0.9);
+        box-shadow: 0 0 18px rgba(57, 255, 136, 0.35);
+      }
+      .chatClose {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+      }
+      .chatClose:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+      .chatBody {
+        padding: 14px;
+        overflow: auto;
+        display: grid;
+        gap: 10px;
+        background:
+          radial-gradient(520px 240px at 20% 20%, rgba(24, 224, 255, 0.12), transparent 65%),
+          radial-gradient(520px 240px at 80% 80%, rgba(57, 255, 136, 0.10), transparent 65%),
+          rgba(255, 255, 255, 0.03);
+      }
+      .msg {
+        max-width: 92%;
+        padding: 12px 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.18);
+        color: rgba(255, 255, 255, 0.80);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .msg.user {
+        margin-left: auto;
+        background: linear-gradient(135deg, rgba(24, 224, 255, 0.12), rgba(57, 255, 136, 0.10));
+        border-color: rgba(24, 224, 255, 0.18);
+      }
+      .chatFoot {
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.18);
+        display: grid;
+        gap: 10px;
+      }
+      .quickRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .qBtn {
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.78);
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      .qBtn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+      .inRow {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .input {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.88);
+        outline: none;
+      }
+      .input:focus {
+        border-color: rgba(24, 224, 255, 0.30);
+        box-shadow: 0 0 0 6px rgba(24, 224, 255, 0.08);
+      }
+      .send {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        border: 1px solid rgba(57, 255, 136, 0.25);
+        background: rgba(57, 255, 136, 0.10);
+        cursor: pointer;
+        transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+        display: grid;
+        place-items: center;
+      }
+      .send:hover {
+        transform: translateY(-1px);
+        border-color: rgba(57, 255, 136, 0.35);
+        background: rgba(57, 255, 136, 0.14);
+      }
+      .send svg {
+        width: 18px;
+        height: 18px;
+        fill: rgba(57, 255, 136, 0.95);
+      }
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      /* Larger screens */
+      @media (min-width: 860px) {
+        nav {
+          display: flex;
+        }
+        .menuBtn {
+          display: none;
+        }
+        .heroGrid {
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 18px;
+          align-items: stretch;
+        }
+        .hero {
+          padding: 62px 0 34px;
+        }
+        .cards {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .dashWrap {
+          grid-template-columns: 1.15fr 0.85fr;
+        }
+        .dashGrid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .benefits {
+          grid-template-columns: 1.05fr 0.95fr;
+        }
+        .quotes {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .pricing {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .ctaBanner .row {
+          grid-template-columns: 1fr auto;
+        }
+        .foot {
+          grid-template-columns: 1.2fr 1fr;
+          align-items: center;
+        }
+        .footLinks {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      /* CTA Modals (Start Free Trial / Book Demo) */
+      .modalOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: none;
+        place-items: center;
+        padding: 18px;
+        background: rgba(0, 0, 0, 0.58);
+      }
+
+      .modalOverlay[aria-hidden="false"] {
+        display: grid;
+      }
+
+      .modalCard {
+        width: min(620px, 100%);
+        max-height: calc(100vh - 36px);
+        overflow: auto;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .modalHeader {
+        padding: 16px 16px 12px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(0, 0, 0, 0.14);
+      }
+
+      .modalKicker {
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.24px;
+        color: rgba(57, 255, 136, 0.92);
+        text-transform: uppercase;
+      }
+
+      .modalHeader h3 {
+        margin: 6px 0 0;
+        font-size: 18px;
+        letter-spacing: -0.2px;
+        line-height: 1.25;
+      }
+
+      .modalCloseBtn {
+        width: 42px;
+        height: 42px;
+        border-radius: 16px;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        display: grid;
+        place-items: center;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+      }
+
+      .modalCloseBtn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+
+      .modalCloseBtn svg {
+        width: 18px;
+        height: 18px;
+        fill: rgba(255, 255, 255, 0.86);
+      }
+
+      .modalBody {
+        padding: 14px 16px 16px;
+      }
+
+      .formGrid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      @media (min-width: 740px) {
+        .formGrid.twoCol {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .fieldLabel {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.78);
+        font-weight: 700;
+        letter-spacing: -0.1px;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .field {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.90);
+        outline: none;
+      }
+
+      .field:focus {
+        border-color: rgba(24, 224, 255, 0.34);
+        box-shadow: 0 0 0 6px rgba(24, 224, 255, 0.08);
+      }
+
+      .field[aria-invalid="true"] {
+        border-color: rgba(255, 74, 213, 0.46);
+        box-shadow: 0 0 0 6px rgba(255, 74, 213, 0.10);
+      }
+
+      textarea.field {
+        resize: vertical;
+        min-height: 96px;
+      }
+
+      select.field {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.55) 50%),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.55) 50%, transparent 50%);
+        background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+        padding-right: 36px;
+      }
+
+      .formError {
+        margin-top: 10px;
+        font-size: 13px;
+        color: rgba(255, 74, 213, 0.92);
+        line-height: 1.4;
+      }
+
+      .modalActions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+
+      .modalHint {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.70);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .modalSuccess {
+        display: none;
+      }
+
+      .modalSuccess[aria-hidden="false"] {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <div class="row">
+          <a class="brand" href="#top" aria-label="GymOS Home">
+            <span class="logo" aria-hidden="true"></span>
+            <span>GymOS</span>
+          </a>
+          <nav aria-label="Primary">
+            <a href="#features">Features</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#benefits">Benefits</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#pricing">Pricing</a>
+          </nav>
+          <div class="actions">
+            <button class="btn" type="button" data-modal="demo">
+              Book Demo
+            </button>
+            <button class="btn primary" type="button" data-modal="trial">
+              <span class="ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14-4-4 1.41-1.41L11 12.17l5.59-5.58L18 8Z"
+                  />
+                </svg>
+              </span>
+              Start Free Trial
+            </button>
+            <button class="btn menuBtn" type="button" id="menuBtn" aria-expanded="false" aria-controls="mobileNav">
+              <span class="ic" aria-hidden="true" style="margin: 0">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="glass mobileNav" id="mobileNav" role="navigation" aria-label="Mobile" aria-hidden="true">
+          <a href="#features">Features <span aria-hidden="true">→</span></a>
+          <a href="#dashboard">Dashboard <span aria-hidden="true">→</span></a>
+          <a href="#benefits">Benefits <span aria-hidden="true">→</span></a>
+          <a href="#testimonials">Testimonials <span aria-hidden="true">→</span></a>
+          <a href="#pricing">Pricing <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <div class="wrap heroGrid">
+          <div>
+            <span class="pill" aria-label="Product highlight">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="muted"><strong>AI-ready</strong> insights + automation for gyms</span>
+            </span>
+            <h1 class="headline">
+              Transform Your <span>Gym Management</span> Effortlessly
+            </h1>
+            <p class="sub">
+              Automate memberships, attendance, trainer schedules, and billing — then
+              track revenue, retention, and peak hours with a sleek real-time dashboard.
+            </p>
+            <div class="ctaRow">
+              <button class="btn primary" type="button" data-modal="trial">Start Free Trial</button>
+              <button class="btn" type="button" data-modal="demo">Book Demo</button>
+              <span class="chip" aria-label="No credit card required">
+                <strong>No credit card</strong> · Cancel anytime
+              </span>
+            </div>
+            <div class="trustRow" aria-label="Trust indicators">
+              <span class="chip"><strong>99.9%</strong> uptime</span>
+              <span class="chip"><strong>QR + biometric-ready</strong> check-ins</span>
+              <span class="chip"><strong>PCI-friendly</strong> billing flows</span>
+            </div>
+          </div>
+          <aside class="glass heroCard" aria-label="Preview">
+            <div class="heroCardInner">
+              <div class="heroGymBg">
+                <div class="dashTop">
+                  <div class="dashTitle">Admin Overview</div>
+                  <div class="dashPills">
+                    <span class="tinyPill">Today</span>
+                    <span class="tinyPill">Auto Alerts</span>
+                  </div>
+                </div>
+                <div class="kpiRow" aria-label="KPIs">
+                  <div class="kpi blue">
+                    <div class="label">Active Members</div>
+                    <div class="val">1,284</div>
+                  </div>
+                  <div class="kpi green">
+                    <div class="label">Monthly Revenue</div>
+                    <div class="val">$48.6k</div>
+                  </div>
+                  <div class="kpi pink">
+                    <div class="label">Attendance</div>
+                    <div class="val">92%</div>
+                  </div>
+                </div>
+                <div class="miniChart" aria-label="Attendance trend">
+                  <header>
+                    <span>Attendance Trend</span>
+                    <span class="muted2">+14% WoW</span>
+                  </header>
+                  <div class="spark">
+                    <svg viewBox="0 0 220 90" preserveAspectRatio="none" aria-hidden="true">
+                      <path class="fill" d="M0,70 C30,60 40,25 60,30 C80,35 90,70 110,60 C130,50 140,20 160,26 C180,32 190,55 220,40 L220,90 L0,90 Z"></path>
+                      <path d="M0,70 C30,60 40,25 60,30 C80,35 90,70 110,60 C130,50 140,20 160,26 C180,32 190,55 220,40"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div style="margin-top: 12px">
+                  <div class="muted2" style="font-size: 12px; margin-bottom: 8px">Live System Pulse</div>
+                  <div class="heartbeat" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <section class="section" id="features">
+        <div class="wrap">
+          <div class="secHead">
+            <h2>Everything you need to run a modern gym</h2>
+            <p>
+              Built for owners, trainers, and front-desk teams — fast workflows,
+              clean dashboards, and automation that feels effortless.
+            </p>
+          </div>
+          <div class="cards" role="list">
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7h10v10H7z" stroke="rgba(24,224,255,.95)" stroke-width="2" />
+                  <path d="M4 10h3M17 10h3M4 14h3M17 14h3" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>Membership management</h3>
+              <p>Plans, renewals, freezes, add-ons, and smart reminders — all in one place.</p>
+            </article>
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 3h10v18H7z" stroke="rgba(24,224,255,.95)" stroke-width="2" />
+                  <path d="M9 8h6M9 12h6M9 16h4" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>Attendance tracking</h3>
+              <p>QR check-ins with optional biometric-ready flows and real-time capacity alerts.</p>
+            </article>
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v14H4z" stroke="rgba(24,224,255,.95)" stroke-width="2" />
+                  <path d="M8 3v6M16 3v6" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M7 12h10" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>Trainer & class scheduling</h3>
+              <p>Coach calendars, class rosters, waitlists, and automated member notifications.</p>
+            </article>
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M6 8h12v10H6z" stroke="rgba(24,224,255,.95)" stroke-width="2" />
+                  <path d="M8 12h8" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M10 5h4" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>Payment & billing automation</h3>
+              <p>Invoices, subscriptions, failed-payment recovery, and clean receipts.</p>
+            </article>
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 19V9" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M12 19V5" stroke="rgba(24,224,255,.95)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M19 19v-8" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>AI-based insights dashboard</h3>
+              <p>Retention signals, peak hours, trainer utilization, and revenue forecasting.</p>
+            </article>
+            <article class="glass card" role="listitem">
+              <span class="gradStroke" aria-hidden="true"></span>
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M8 7h8" stroke="rgba(24,224,255,.95)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M6 11h12" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M9 15h6" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M4 5h16v14H4z" stroke="rgba(255,255,255,.22)" stroke-width="2" />
+                </svg>
+              </div>
+              <h3>Owner-first controls</h3>
+              <p>Roles, audit history, exports, and configurable rules for busy teams.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="section" id="dashboard">
+        <div class="wrap">
+          <div class="secHead">
+            <h2>Dashboard preview</h2>
+            <p>
+              A clean admin view with KPIs, trends, and action prompts — designed to be
+              React/Tailwind-friendly and pixel-perfect for production builds.
+            </p>
+          </div>
+          <div class="dashWrap">
+            <div class="glass dash">
+              <div class="dashTop">
+                <div class="dashTitle">GymOS Analytics</div>
+                <div class="dashPills">
+                  <span class="tinyPill">Active: 1,284</span>
+                  <span class="tinyPill">Revenue: $48.6k</span>
+                  <span class="tinyPill">Churn Risk: Low</span>
+                </div>
+              </div>
+              <div class="dashGrid">
+                <div class="chartCard">
+                  <header>
+                    <span class="k">Revenue</span>
+                    <span class="t">Last 10 days</span>
+                  </header>
+                  <div class="bars" aria-hidden="true">
+                    <div class="bar" style="height: 52%"></div>
+                    <div class="bar" style="height: 60%"></div>
+                    <div class="bar" style="height: 44%"></div>
+                    <div class="bar" style="height: 72%"></div>
+                    <div class="bar" style="height: 66%"></div>
+                    <div class="bar" style="height: 78%"></div>
+                    <div class="bar" style="height: 62%"></div>
+                    <div class="bar" style="height: 88%"></div>
+                    <div class="bar" style="height: 74%"></div>
+                    <div class="bar" style="height: 92%"></div>
+                  </div>
+                </div>
+                <div class="chartCard">
+                  <header>
+                    <span class="k">Attendance</span>
+                    <span class="t">Hourly pattern</span>
+                  </header>
+                  <div class="lines" aria-hidden="true">
+                    <svg viewBox="0 0 240 120" preserveAspectRatio="none">
+                      <path class="a" d="M0,88 C25,82 35,40 55,48 C75,56 90,95 112,82 C135,70 145,35 168,42 C190,49 206,72 240,58" />
+                      <path class="b" d="M0,96 C35,88 45,68 64,70 C88,74 98,94 122,86 C145,78 160,58 182,62 C206,66 216,80 240,74" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="neu infograph">
+              <div class="pill">
+                <span class="dot" aria-hidden="true"></span>
+                <span class="muted">AI assistant recommends next best actions</span>
+              </div>
+              <h3 style="margin: 14px 0 10px; font-size: 18px; letter-spacing: -0.2px">
+                “Boost retention this week”
+              </h3>
+              <p class="muted" style="margin: 0; line-height: 1.6">
+                Identify members at risk, send smart reminders, and optimize schedules based on peak hours.
+              </p>
+              <div class="rings" aria-label="Infographics">
+                <div class="ring">
+                  <div class="n">-28%</div>
+                  <div class="s">No-show reduction with automated nudges</div>
+                </div>
+                <div class="ring">
+                  <div class="n">+19%</div>
+                  <div class="s">Upsell conversion via plan recommendations</div>
+                </div>
+                <div class="ring">
+                  <div class="n">+14%</div>
+                  <div class="s">Revenue uplift from recovery workflows</div>
+                </div>
+              </div>
+              <div class="progress" aria-label="Progress bars">
+                <div>
+                  <div class="pRow"><span>Member engagement</span><span class="muted2">82%</span></div>
+                  <div class="pBar"><i style="--w: 82%"></i></div>
+                </div>
+                <div>
+                  <div class="pRow"><span>Billing health</span><span class="muted2">91%</span></div>
+                  <div class="pBar"><i style="--w: 91%"></i></div>
+                </div>
+                <div>
+                  <div class="pRow"><span>Trainer utilization</span><span class="muted2">76%</span></div>
+                  <div class="pBar"><i style="--w: 76%"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section" id="benefits">
+        <div class="wrap">
+          <div class="secHead">
+            <h2>Save time, increase revenue, improve retention</h2>
+            <p>
+              GymOS cuts manual work while giving you clarity: who’s coming, who’s at risk,
+              and where revenue is leaking — so you can act fast.
+            </p>
+          </div>
+          <div class="benefits">
+            <div class="cards">
+              <article class="glass card">
+                <span class="gradStroke" aria-hidden="true"></span>
+                <div class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2v6" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M4 14c0 4 3 8 8 8s8-4 8-8" stroke="rgba(24,224,255,.9)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M8 10h8" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <h3>Less admin, more coaching</h3>
+                <p>Automate repeatable tasks and keep the front desk light, even during rush hours.</p>
+              </article>
+              <article class="glass card">
+                <span class="gradStroke" aria-hidden="true"></span>
+                <div class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 18h16" stroke="rgba(255,255,255,.22)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M7 18V8" stroke="rgba(24,224,255,.9)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M12 18V5" stroke="rgba(57,255,136,.9)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M17 18v-7" stroke="rgba(255,74,213,.8)" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <h3>Revenue clarity</h3>
+                <p>Track MRR, churn risk, and class profitability with a dashboard that updates fast.</p>
+              </article>
+              <article class="glass card">
+                <span class="gradStroke" aria-hidden="true"></span>
+                <div class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 21s7-4.4 7-11a4 4 0 0 0-7-2.6A4 4 0 0 0 5 10c0 6.6 7 11 7 11Z" stroke="rgba(57,255,136,.9)" stroke-width="2" />
+                    <path d="M8.5 11.5 11 14l4.7-5" stroke="rgba(24,224,255,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <h3>Retention-first operations</h3>
+                <p>Smart reminders and insights keep members engaged and reduce silent churn.</p>
+              </article>
+            </div>
+            <div class="glass infograph">
+              <div class="pill">
+                <span class="dot" aria-hidden="true"></span>
+                <span class="muted">Subtle fitness animations baked in</span>
+              </div>
+              <h3 style="margin: 14px 0 8px; letter-spacing: -0.2px">Performance without the noise</h3>
+              <p class="muted" style="margin: 0; line-height: 1.6">
+                Glassmorphism panels, smooth gradients, and hover micro-interactions — energetic but professional.
+              </p>
+              <div style="margin-top: 14px" class="neu">
+                <div style="padding: 14px">
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+                    <strong style="letter-spacing: -0.2px">Workout Progress</strong>
+                    <span class="muted2" style="font-size: 12px">Auto-sync</span>
+                  </div>
+                  <div class="progress">
+                    <div>
+                      <div class="pRow"><span>Class fill rate</span><span class="muted2">74%</span></div>
+                      <div class="pBar"><i style="--w: 74%"></i></div>
+                    </div>
+                    <div>
+                      <div class="pRow"><span>Lead conversion</span><span class="muted2">31%</span></div>
+                      <div class="pBar"><i style="--w: 31%"></i></div>
+                    </div>
+                    <div>
+                      <div class="pRow"><span>Recovery billing</span><span class="muted2">63%</span></div>
+                      <div class="pBar"><i style="--w: 63%"></i></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section" id="testimonials">
+        <div class="wrap">
+          <div class="secHead">
+            <h2>Trusted by operators who care about experience</h2>
+            <p>
+              Realistic, owner-first wins: fewer no-shows, cleaner billing, and a front desk that stays calm.
+            </p>
+          </div>
+          <div class="quotes">
+            <div class="glass quote">
+              <p>
+                “We replaced three tools with GymOS. Check-ins are smooth, billing is automatic,
+                and the dashboard finally tells us what to fix each week.”
+              </p>
+              <div class="who">
+                <div class="avatar" aria-hidden="true"></div>
+                <div>
+                  <strong>Riya Patel</strong>
+                  <span>Owner, IronEdge Fitness</span>
+                </div>
+              </div>
+            </div>
+            <div class="glass quote">
+              <p>
+                “Class scheduling used to be chaos. Now trainers have one source of truth and members
+                get updates automatically. Our attendance is way more consistent.”
+              </p>
+              <div class="who">
+                <div class="avatar" aria-hidden="true"></div>
+                <div>
+                  <strong>Aditya Menon</strong>
+                  <span>Head Coach, Pulse Studio</span>
+                </div>
+              </div>
+            </div>
+            <div class="glass quote">
+              <p>
+                “The AI insights are practical — churn warnings, peak hours, and billing recovery tips.
+                It’s like having an ops assistant built into the product.”
+              </p>
+              <div class="who">
+                <div class="avatar" aria-hidden="true"></div>
+                <div>
+                  <strong>Neha Singh</strong>
+                  <span>Manager, CityFit Center</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section" id="pricing">
+        <div class="wrap">
+          <div class="secHead">
+            <h2>Simple pricing that scales with you</h2>
+            <p>
+              Start lean, then upgrade when you’re ready. All plans include secure access,
+              core automation, and a modern admin dashboard UI.
+            </p>
+          </div>
+          <div class="pricing">
+            <div class="glass price">
+              <span class="tag">Basic</span>
+              <h3>For new gyms</h3>
+              <div class="money">
+                <strong>$39</strong>
+                <span class="muted2">/month</span>
+              </div>
+              <ul>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Memberships & basic billing</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>QR attendance tracking</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Core dashboard KPIs</li>
+              </ul>
+              <button class="btn primary" type="button" data-modal="trial">Start Free Trial</button>
+            </div>
+            <div class="glass price popular">
+              <span class="badge">Most Popular</span>
+              <span class="tag">Pro</span>
+              <h3>For growing teams</h3>
+              <div class="money">
+                <strong>$89</strong>
+                <span class="muted2">/month</span>
+              </div>
+              <ul>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Trainer & class scheduling</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Billing automation + recovery</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>AI insights & smart alerts</li>
+              </ul>
+              <button class="btn primary" type="button" data-modal="trial">Start Free Trial</button>
+            </div>
+            <div class="glass price">
+              <span class="tag">Enterprise</span>
+              <h3>For multi-location</h3>
+              <div class="money">
+                <strong>Custom</strong>
+                <span class="muted2">/year</span>
+              </div>
+              <ul>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Advanced roles & audit controls</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Biometric-ready attendance flows</li>
+                <li><span class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5 1.4-1.4L9 14.2 18.6 4.6z"/></svg></span>Dedicated onboarding & SLAs</li>
+              </ul>
+              <button class="btn" type="button" data-modal="demo">Book Demo</button>
+            </div>
+          </div>
+          <div style="margin-top: 18px" class="glass ctaBanner">
+            <div class="row">
+              <div>
+                <h3>Ready to Power Up Your Gym?</h3>
+                <p class="muted" style="margin: 6px 0 0; line-height: 1.6">
+                  Launch in minutes. Impress members with a modern experience. Let automation do the work.
+                </p>
+              </div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end">
+                <button class="btn primary" type="button" data-modal="trial">Start Free Trial</button>
+                <button class="btn" type="button" data-modal="demo">Book Demo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap foot">
+        <div>
+          <div class="brand" style="margin-bottom: 10px">
+            <span class="logo" aria-hidden="true"></span>
+            <span>GymOS</span>
+          </div>
+          <p class="muted" style="margin: 0; line-height: 1.7; max-width: 62ch">
+            Modern gym management for owners and trainers — memberships, attendance, scheduling,
+            billing, and AI insights in one sleek platform.
+          </p>
+          <div class="social" style="margin-top: 14px" aria-label="Social links">
+            <a class="soc" href="#" aria-label="Twitter/X">
+              <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23.3 22h-6.6l-5.2-6.5L5.8 22H2.7l7.3-8.4L.7 2h6.8l4.7 5.9L18.9 2Zm-1.2 18h1.8L7.9 3.9H6L17.7 20Z"/></svg>
+            </a>
+            <a class="soc" href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5ZM0.5 23.5h4V7.98h-4V23.5ZM8 7.98h3.8v2.12h.05c.53-1 1.82-2.06 3.75-2.06 4.01 0 4.75 2.64 4.75 6.08v9.38h-4v-8.32c0-1.98-.04-4.52-2.75-4.52-2.75 0-3.17 2.15-3.17 4.38v8.46H8V7.98Z"/></svg>
+            </a>
+            <a class="soc" href="#" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Zm-5 4.5A5.5 5.5 0 1 1 6.5 14 5.51 5.51 0 0 1 12 8.5Zm0 2A3.5 3.5 0 1 0 15.5 14 3.5 3.5 0 0 0 12 10.5ZM18 6.3a1 1 0 1 1-1 1 1 1 0 0 1 1-1Z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <div class="footLinks" aria-label="Footer links">
+            <a href="#features">Features <span aria-hidden="true">↗</span></a>
+            <a href="#pricing">Pricing <span aria-hidden="true">↗</span></a>
+            <a href="#dashboard">Dashboard <span aria-hidden="true">↗</span></a>
+            <a href="#" aria-label="Contact email">hello@gymos.app <span aria-hidden="true">✉</span></a>
+            <a href="#" aria-label="Phone contact">+1 (555) 013-2040 <span aria-hidden="true">☎</span></a>
+            <a href="#" aria-label="Address">Downtown, Your City <span aria-hidden="true">⌁</span></a>
+          </div>
+          <p class="muted2" style="margin: 14px 0 0; font-size: 12px; line-height: 1.6">
+            © <span id="year"></span> GymOS. All rights reserved. Built with a dark neon, glassmorphism aesthetic.
+          </p>
+        </div>
+      </div>
+    </footer>
+    <button class="chatFab" type="button" id="chatFab" aria-label="Open AI assistant">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3c5 0 9 3.58 9 8 0 4.42-4 8-9 8-1.02 0-2.02-.15-2.95-.43L4 21l1.6-4.3C4.6 15.39 3 13.34 3 11c0-4.42 4-8 9-8Zm-4 9h8v2H8v-2Zm0-4h8v2H8V8Z"/>
+      </svg>
+    </button>
+    <section class="glass chatPanel" id="chatPanel" aria-hidden="true" aria-label="AI assistant chat">
+      <div class="chatHead">
+        <strong>
+          <span class="dot" aria-hidden="true" style="width: 10px; height: 10px"></span>
+          GymOS Assistant
+        </strong>
+        <div class="status"><i aria-hidden="true"></i> Online</div>
+        <button class="chatClose" type="button" id="chatClose" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; fill: rgba(255,255,255,.82)">
+            <path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3 1.42 1.42Z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chatBody" id="chatBody" aria-live="polite">
+        <div class="msg">
+          Hi! I can help you with onboarding, pricing, or feature fit. Try:
+          “How does QR attendance work?” or “Which plan suits a 2-location gym?”
+        </div>
+      </div>
+      <div class="chatFoot">
+        <div class="quickRow" aria-label="Quick prompts">
+          <button class="qBtn" type="button" data-q="Show me the Pro plan features.">Pro plan</button>
+          <button class="qBtn" type="button" data-q="How do you reduce member churn?">Retention tips</button>
+          <button class="qBtn" type="button" data-q="Can I integrate QR check-ins?">Attendance</button>
+        </div>
+        <form class="inRow" id="chatForm">
+          <input class="input" id="chatInput" placeholder="Ask GymOS Assistant…" autocomplete="off" />
+          <button class="send" type="submit" aria-label="Send message">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21 23 12 2 3v7l15 2-15 2v7Z"/></svg>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Start Free Trial Modal -->
+    <section
+      class="modalOverlay"
+      id="trialOverlay"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="trialTitle"
+    >
+      <div class="modalCard">
+        <div class="modalHeader">
+          <div>
+            <div class="modalKicker">Free Trial</div>
+            <h3 id="trialTitle">Start in minutes (no credit card)</h3>
+          </div>
+          <button class="modalCloseBtn" type="button" id="trialClose" aria-label="Close free trial modal">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3 1.42 1.42Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modalBody">
+          <div id="trialFormView">
+            <form id="trialForm" novalidate>
+              <div class="formGrid twoCol">
+                <div>
+                  <label class="fieldLabel" for="trialName">Full name</label>
+                  <input class="field" id="trialName" name="trialName" type="text" autocomplete="name" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="trialEmail">Work email</label>
+                  <input class="field" id="trialEmail" name="trialEmail" type="email" autocomplete="email" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="trialGym">Gym name</label>
+                  <input class="field" id="trialGym" name="trialGym" type="text" autocomplete="organization" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="trialLocations">Locations</label>
+                  <select class="field" id="trialLocations" name="trialLocations" required>
+                    <option value="1">1</option>
+                    <option value="2-3">2-3</option>
+                    <option value="4-10">4-10</option>
+                    <option value="10+">10+</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="modalHint">You will get a setup link and a quick onboarding checklist.</div>
+              <div class="formError" id="trialErr" role="alert" aria-live="polite"></div>
+
+              <div class="modalActions">
+                <button class="btn" type="button" data-close-modal="trial">Cancel</button>
+                <button class="btn primary" type="submit" id="trialSubmit">Start Free Trial</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="modalSuccess" id="trialSuccessView" aria-hidden="true">
+            <div class="pill" style="margin-bottom: 12px">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="muted" style="font-weight: 800">Request received</span>
+            </div>
+            <h3 style="margin: 0 0 8px; font-size: 20px; letter-spacing: -0.3px">
+              You’re set — we’ll email your setup link.
+            </h3>
+            <p class="muted" style="margin: 0; line-height: 1.7">
+              Next, we’ll send onboarding steps and recommended modules for your gym size.
+            </p>
+
+            <div class="modalActions" style="margin-top: 16px">
+              <button class="btn primary" type="button" data-close-modal="trial">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Book Demo Modal -->
+    <section
+      class="modalOverlay"
+      id="demoOverlay"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="demoTitle"
+    >
+      <div class="modalCard">
+        <div class="modalHeader">
+          <div>
+            <div class="modalKicker">Book Demo</div>
+            <h3 id="demoTitle">See GymOS in action</h3>
+          </div>
+          <button class="modalCloseBtn" type="button" id="demoClose" aria-label="Close book demo modal">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3 1.42 1.42Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modalBody">
+          <div id="demoFormView">
+            <form id="demoForm" novalidate>
+              <div class="formGrid twoCol">
+                <div>
+                  <label class="fieldLabel" for="demoName">Full name</label>
+                  <input class="field" id="demoName" name="demoName" type="text" autocomplete="name" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="demoEmail">Work email</label>
+                  <input class="field" id="demoEmail" name="demoEmail" type="email" autocomplete="email" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="demoGym">Gym name</label>
+                  <input class="field" id="demoGym" name="demoGym" type="text" autocomplete="organization" required />
+                </div>
+                <div>
+                  <label class="fieldLabel" for="demoTime">Preferred time</label>
+                  <select class="field" id="demoTime" name="demoTime" required>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                  </select>
+                </div>
+                <div style="grid-column: 1 / -1">
+                  <label class="fieldLabel" for="demoNote">What do you want to improve? (optional)</label>
+                  <textarea class="field" id="demoNote" name="demoNote" placeholder="e.g., reduce no-shows, streamline check-ins..."></textarea>
+                </div>
+              </div>
+
+              <div class="formError" id="demoErr" role="alert" aria-live="polite"></div>
+
+              <div class="modalActions">
+                <button class="btn" type="button" data-close-modal="demo">Cancel</button>
+                <button class="btn primary" type="submit" id="demoSubmit">Book Demo</button>
+              </div>
+
+              <div class="modalHint">We’ll confirm your demo time via email.</div>
+            </form>
+          </div>
+
+          <div class="modalSuccess" id="demoSuccessView" aria-hidden="true">
+            <div class="pill" style="margin-bottom: 12px">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="muted" style="font-weight: 800">Demo request sent</span>
+            </div>
+            <h3 style="margin: 0 0 8px; font-size: 20px; letter-spacing: -0.3px">
+              Thanks — we’ll reach out soon to schedule your demo.
+            </h3>
+            <p class="muted" style="margin: 0; line-height: 1.7">
+              Preferred time: <strong><span id="demoTimeLabel">—</span></strong>. We’ll email you next steps.
+            </p>
+
+            <div class="modalActions" style="margin-top: 16px">
+              <button class="btn primary" type="button" data-close-modal="demo">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const $ = (s, el = document) => el.querySelector(s);
+      const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+      $("#year").textContent = new Date().getFullYear();
+      const menuBtn = $("#menuBtn");
+      const mobileNav = $("#mobileNav");
+      const setMobileNav = (open) => {
+        if (!menuBtn || !mobileNav) return;
+        menuBtn.setAttribute("aria-expanded", String(open));
+        mobileNav.style.display = open ? "block" : "none";
+        mobileNav.setAttribute("aria-hidden", String(!open));
+      };
+      setMobileNav(false);
+      menuBtn?.addEventListener("click", () => {
+        const open = menuBtn.getAttribute("aria-expanded") !== "true";
+        setMobileNav(open);
+      });
+      $$("#mobileNav a").forEach((a) =>
+        a.addEventListener("click", () => setMobileNav(false)),
+      );
+      // Smooth scroll
+      const scrollToId = (sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      $$("[data-scroll]").forEach((b) =>
+        b.addEventListener("click", () => scrollToId(b.getAttribute("data-scroll"))),
+      );
+      $$("a[href^='#']").forEach((a) =>
+        a.addEventListener("click", (e) => {
+          const href = a.getAttribute("href");
+          if (!href || href === "#") return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          scrollToId(href);
+        }),
+      );
+      // Card hover spotlight
+      $$(".card").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const r = card.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width) * 100;
+          const y = ((e.clientY - r.top) / r.height) * 100;
+          card.style.setProperty("--x", x + "%");
+          card.style.setProperty("--y", y + "%");
+        });
+      });
+      // AI assistant (UI-only demo responses)
+      const chatFab = $("#chatFab");
+      const chatPanel = $("#chatPanel");
+      const chatClose = $("#chatClose");
+      const chatBody = $("#chatBody");
+      const chatForm = $("#chatForm");
+      const chatInput = $("#chatInput");
+      const setChat = (open) => {
+        if (!chatPanel) return;
+        chatPanel.setAttribute("aria-hidden", String(!open));
+        if (open) setTimeout(() => chatInput?.focus(), 50);
+      };
+      const appendMsg = (text, who = "bot") => {
+        if (!chatBody) return;
+        const d = document.createElement("div");
+        d.className = "msg" + (who === "user" ? " user" : "");
+        d.textContent = text;
+        chatBody.appendChild(d);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      };
+      const botReply = (q) => {
+        const t = (q || "").toLowerCase();
+        if (t.includes("pro")) {
+          return "Pro includes scheduling + billing recovery + AI insights. It’s best for gyms with classes, multiple trainers, or growing monthly revenue goals.";
+        }
+        if (t.includes("qr") || t.includes("attendance") || t.includes("check")) {
+          return "Members scan a QR at entry; staff can also validate from the admin view. You get real-time capacity + peak-hour analytics and attendance streaks.";
+        }
+        if (t.includes("churn") || t.includes("retain") || t.includes("retention")) {
+          return "We surface at-risk members (low attendance, failed payments, missed classes), then automate reminders + win-back offers to keep retention high.";
+        }
+        if (t.includes("pricing") || t.includes("plan")) {
+          return "Basic is great for a single location getting started. Pro fits most gyms. Enterprise is best for multi-location ops and advanced controls.";
+        }
+        return "Good question. For a tailored demo, tell me your number of locations, member count, and whether you run classes.";
+      };
+      chatFab?.addEventListener("click", () => setChat(true));
+      chatClose?.addEventListener("click", () => setChat(false));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setChat(false);
+      });
+      $$(".qBtn").forEach((b) =>
+        b.addEventListener("click", () => {
+          const q = b.getAttribute("data-q") || "";
+          appendMsg(q, "user");
+          setTimeout(() => appendMsg(botReply(q), "bot"), 220);
+        }),
+      );
+      chatForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const q = (chatInput?.value || "").trim();
+        if (!q) return;
+        appendMsg(q, "user");
+        chatInput.value = "";
+        setTimeout(() => appendMsg(botReply(q), "bot"), 260);
+      });
+
+      // CTA modals: validation + success UI (no backend; demo behavior)
+      const trialOverlay = $("#trialOverlay");
+      const demoOverlay = $("#demoOverlay");
+      const trialClose = $("#trialClose");
+      const demoClose = $("#demoClose");
+
+      const trialForm = $("#trialForm");
+      const demoForm = $("#demoForm");
+
+      const trialFormView = $("#trialFormView");
+      const trialSuccessView = $("#trialSuccessView");
+      const trialErr = $("#trialErr");
+      const trialSubmit = $("#trialSubmit");
+
+      const demoFormView = $("#demoFormView");
+      const demoSuccessView = $("#demoSuccessView");
+      const demoErr = $("#demoErr");
+      const demoSubmit = $("#demoSubmit");
+      const demoTimeLabel = $("#demoTimeLabel");
+
+      let lastActiveEl = null;
+
+      const emailOk = (email) =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+
+      const setInvalid = (el, yes) => {
+        if (!el) return;
+        el.setAttribute("aria-invalid", yes ? "true" : "false");
+      };
+
+      const lockScroll = (lock) => {
+        document.body.style.overflow = lock ? "hidden" : "";
+      };
+
+      const setTrialOpen = (open) => {
+        if (!trialOverlay) return;
+        trialOverlay.setAttribute("aria-hidden", String(!open));
+        if (!open) {
+          if (trialForm) trialForm.reset();
+          if (trialErr) trialErr.textContent = "";
+          if (trialFormView) trialFormView.style.display = "";
+          if (trialSuccessView) trialSuccessView.setAttribute("aria-hidden", "true");
+
+          ["#trialName", "#trialEmail", "#trialGym", "#trialLocations"].forEach((s) =>
+            setInvalid($(s), false),
+          );
+          lockScroll(false);
+          lastActiveEl?.focus?.();
+          lastActiveEl = null;
+        }
+      };
+
+      const setDemoOpen = (open) => {
+        if (!demoOverlay) return;
+        demoOverlay.setAttribute("aria-hidden", String(!open));
+        if (!open) {
+          if (demoForm) demoForm.reset();
+          if (demoErr) demoErr.textContent = "";
+          if (demoFormView) demoFormView.style.display = "";
+          if (demoSuccessView) demoSuccessView.setAttribute("aria-hidden", "true");
+
+          ["#demoName", "#demoEmail", "#demoGym", "#demoTime"].forEach((s) =>
+            setInvalid($(s), false),
+          );
+          lockScroll(false);
+          lastActiveEl?.focus?.();
+          lastActiveEl = null;
+        }
+      };
+
+      const closeAllModals = () => {
+        setTrialOpen(false);
+        setDemoOpen(false);
+      };
+
+      const openTrial = () => {
+        if (!trialOverlay) return;
+        lastActiveEl = document.activeElement;
+        setTrialOpen(true);
+        // reset state
+        if (trialForm) trialForm.reset();
+        if (trialErr) trialErr.textContent = "";
+        if (trialFormView) trialFormView.style.display = "";
+        if (trialSuccessView) trialSuccessView.setAttribute("aria-hidden", "true");
+        ["#trialName", "#trialEmail", "#trialGym", "#trialLocations"].forEach((s) =>
+          setInvalid($(s), false),
+        );
+        lockScroll(true);
+        setTimeout(() => $("#trialName")?.focus?.(), 50);
+      };
+
+      const openDemo = () => {
+        if (!demoOverlay) return;
+        lastActiveEl = document.activeElement;
+        setDemoOpen(true);
+        if (demoForm) demoForm.reset();
+        if (demoErr) demoErr.textContent = "";
+        if (demoFormView) demoFormView.style.display = "";
+        if (demoSuccessView) demoSuccessView.setAttribute("aria-hidden", "true");
+        ["#demoName", "#demoEmail", "#demoGym", "#demoTime"].forEach((s) =>
+          setInvalid($(s), false),
+        );
+        lockScroll(true);
+        setTimeout(() => $("#demoName")?.focus?.(), 50);
+      };
+
+      // Wire CTA buttons
+      $$('[data-modal="trial"]').forEach((b) =>
+        b.addEventListener("click", () => {
+          setDemoOpen(false);
+          openTrial();
+        }),
+      );
+      $$('[data-modal="demo"]').forEach((b) =>
+        b.addEventListener("click", () => {
+          setTrialOpen(false);
+          openDemo();
+        }),
+      );
+
+      // Close handlers
+      trialClose?.addEventListener("click", () => setTrialOpen(false));
+      demoClose?.addEventListener("click", () => setDemoOpen(false));
+
+      $$("[data-close-modal]").forEach((b) =>
+        b.addEventListener("click", () => closeAllModals()),
+      );
+
+      trialOverlay?.addEventListener("click", (e) => {
+        if (e.target === trialOverlay) closeAllModals();
+      });
+      demoOverlay?.addEventListener("click", (e) => {
+        if (e.target === demoOverlay) closeAllModals();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAllModals();
+      });
+
+      // Trial submit
+      trialForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!trialForm) return;
+
+        if (trialErr) trialErr.textContent = "";
+
+        const name = $("#trialName")?.value || "";
+        const email = $("#trialEmail")?.value || "";
+        const gym = $("#trialGym")?.value || "";
+        const locations = $("#trialLocations")?.value || "";
+
+        const vName = name.trim().length >= 2;
+        const vEmail = emailOk(email);
+        const vGym = gym.trim().length >= 2;
+        const vLoc = String(locations).trim().length > 0;
+
+        setInvalid($("#trialName"), !vName);
+        setInvalid($("#trialEmail"), !vEmail);
+        setInvalid($("#trialGym"), !vGym);
+        setInvalid($("#trialLocations"), !vLoc);
+
+        if (!vName || !vEmail || !vGym || !vLoc) {
+          if (trialErr)
+            trialErr.textContent =
+              "Please enter a valid name, work email, gym name, and number of locations.";
+          return;
+        }
+
+        if (trialSubmit) {
+          trialSubmit.disabled = true;
+          trialSubmit.textContent = "Submitting...";
+        }
+
+        setTimeout(() => {
+          if (trialSubmit) {
+            trialSubmit.disabled = false;
+            trialSubmit.textContent = "Start Free Trial";
+          }
+
+          if (trialFormView) trialFormView.style.display = "none";
+          if (trialSuccessView) trialSuccessView.setAttribute("aria-hidden", "false");
+        }, 950);
+      });
+
+      // Demo submit
+      demoForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!demoForm) return;
+
+        if (demoErr) demoErr.textContent = "";
+
+        const name = $("#demoName")?.value || "";
+        const email = $("#demoEmail")?.value || "";
+        const gym = $("#demoGym")?.value || "";
+        const time = $("#demoTime")?.value || "";
+
+        const vName = name.trim().length >= 2;
+        const vEmail = emailOk(email);
+        const vGym = gym.trim().length >= 2;
+        const vTime = String(time).trim().length > 0;
+
+        setInvalid($("#demoName"), !vName);
+        setInvalid($("#demoEmail"), !vEmail);
+        setInvalid($("#demoGym"), !vGym);
+        setInvalid($("#demoTime"), !vTime);
+
+        if (!vName || !vEmail || !vGym || !vTime) {
+          if (demoErr)
+            demoErr.textContent =
+              "Please enter a valid name, work email, gym name, and preferred time.";
+          return;
+        }
+
+        if (demoSubmit) {
+          demoSubmit.disabled = true;
+          demoSubmit.textContent = "Booking...";
+        }
+
+        setTimeout(() => {
+          if (demoSubmit) {
+            demoSubmit.disabled = false;
+            demoSubmit.textContent = "Book Demo";
+          }
+
+          if (demoTimeLabel) demoTimeLabel.textContent = time;
+          if (demoFormView) demoFormView.style.display = "none";
+          if (demoSuccessView) demoSuccessView.setAttribute("aria-hidden", "false");
+        }, 950);
+      });
+    </script>
+  </body>
+</html>
+
+
+
+

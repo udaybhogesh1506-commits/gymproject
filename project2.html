@@ -1,0 +1,102 @@
+import React from "react";
+
+export default function LandingPage() {
+  const handleClick = (msg) => {
+    alert(msg);
+  };
+
+  return (
+    <div className="bg-black text-white min-h-screen font-sans">
+      {/* Hero Section */}
+      <section className="text-center py-20 px-6 bg-gradient-to-br from-black via-gray-900 to-black">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          Transform Your Gym Management Effortlessly
+        </h1>
+        <p className="text-gray-400 max-w-xl mx-auto mb-6">
+          Automate operations, track members, and gain insights with our
+          all-in-one gym management platform.
+        </p>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={() => handleClick("Starting Free Trial...")}
+            className="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl"
+          >
+            Start Free Trial
+          </button>
+          <button
+            onClick={() => handleClick("Booking Demo...")}
+            className="border border-gray-500 px-6 py-3 rounded-xl hover:bg-gray-800"
+          >
+            Book Demo
+          </button>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="py-16 px-6 grid md:grid-cols-3 gap-6">
+        {[
+          "Membership Management",
+          "Attendance Tracking",
+          "Trainer Scheduling",
+          "Payments Automation",
+          "AI Insights",
+        ].map((feature, i) => (
+          <div
+            key={i}
+            className="bg-gray-900 p-6 rounded-xl shadow-lg hover:scale-105 transition"
+          >
+            <h3 className="text-xl font-semibold mb-2">{feature}</h3>
+            <p className="text-gray-400">Manage {feature.toLowerCase()} easily.</p>
+          </div>
+        ))}
+      </section>
+
+      {/* Dashboard Preview */}
+      <section className="py-16 px-6 text-center">
+        <h2 className="text-3xl font-bold mb-6">Dashboard Overview</h2>
+        <div className="bg-gray-900 p-10 rounded-xl">
+          <p>📊 Active Members: 1200</p>
+          <p>💰 Revenue: ₹5,00,000</p>
+          <p>📅 Attendance: 85%</p>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="py-16 px-6 grid md:grid-cols-3 gap-6 text-center">
+        {["Basic", "Pro", "Enterprise"].map((plan, i) => (
+          <div
+            key={i}
+            className={`p-6 rounded-xl ${
+              plan === "Pro" ? "bg-green-600" : "bg-gray-900"
+            }`}
+          >
+            <h3 className="text-2xl font-bold mb-4">{plan}</h3>
+            <p className="mb-4">₹{i * 999 + 999}/month</p>
+            <button
+              onClick={() => handleClick(`Selected ${plan} Plan`)}
+              className="bg-white text-black px-4 py-2 rounded"
+            >
+              Choose Plan
+            </button>
+          </div>
+        ))}
+      </section>
+
+      {/* CTA */}
+      <section className="text-center py-16">
+        <h2 className="text-3xl font-bold mb-4">Ready to Power Up Your Gym?</h2>
+        <button
+          onClick={() => handleClick("Let's Get Started!")}
+          className="bg-green-500 px-6 py-3 rounded-xl"
+        >
+          Get Started
+        </button>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-6 text-gray-500">
+        © 2026 Gym SaaS. All rights reserved.
+      </footer>
+    </div>
+  );
+}
